@@ -37,10 +37,6 @@ $profile = new ProfileController($db);
 $route = current_route();
 $method = request_method();
 
-if ($method === 'GET' && $route === 'calendar' && !current_user()) {
-    redirect('login');
-}
-
 // 3. แผนที่เส้นทาง — เพิ่มหน้าใหม่ได้โดยใส่เมธอดและตัวควบคุมที่นี่
 $routes = [
     'GET' => [

@@ -31,6 +31,7 @@
             </div>
             <button class="btn btn-primary btn-lg w-100" type="submit">เข้าสู่ระบบ</button>
         </form>
+        <a class="d-inline-block mt-3" href="<?= e(url('calendar')) ?>">ดูปฏิทินโดยไม่เข้าสู่ระบบ</a>
         <?php if (app_config('debug')): ?>
             <div class="demo-box">
                 <p>บัญชีทดลอง</p>

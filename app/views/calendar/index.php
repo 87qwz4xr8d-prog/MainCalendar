@@ -3,12 +3,12 @@ $pageTitle = 'ปฏิทิน';
 $fullWidth = true;
 $scripts = ['js/calendar.js'];
 $cal = [
-    'me' => [
+    'me' => $currentUser ? [
         'id' => (int) $currentUser['id'],
         'name' => $currentUser['name'],
         'role' => $currentUser['role'],
         'department_id' => (int) $currentUser['department_id'],
-    ],
+    ] : null,
     'departments' => $departments,
     'endpoints' => [
         'events' => url('api/events'),
@@ -57,11 +57,15 @@ $cal = [
                     </div>
                     <div id="deptFilters" class="d-grid gap-2 mt-2"></div>
                 </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="mineOnly">
-                    <label class="form-check-label" for="mineOnly">เฉพาะงานของฉัน</label>
-                </div>
-                <p class="side-note"><?= $currentUser['role'] === 'admin' ? 'ผู้ดูแลแก้ไขงานได้ทุกคน' : 'พนักงานแก้ไขและลบได้เฉพาะงานของตนเอง' ?></p>
+                <?php if ($currentUser): ?>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="mineOnly">
+                        <label class="form-check-label" for="mineOnly">เฉพาะงานของฉัน</label>
+                    </div>
+                    <p class="side-note"><?= $currentUser['role'] === 'admin' ? 'ผู้ดูแลแก้ไขงานได้ทุกคน' : 'พนักงานแก้ไขและลบได้เฉพาะงานของตนเอง' ?></p>
+                <?php else: ?>
+                    <p class="side-note">ดูงานได้ทันที เข้าสู่ระบบเมื่อต้องการเพิ่ม แก้ไข หรือลบงาน</p>
+                <?php endif; ?>
             </div>
         </div>
         <div id="calGrid" class="cal-grid"><div class="p-4 text-muted">กำลังโหลดปฏิทิน...</div></div>
@@ -142,6 +146,7 @@ $cal = [
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-outline-danger me-auto" type="button" id="btnDeleteEvent" hidden>ลบงาน</button>
+                    <button class="btn btn-outline-primary me-auto" type="button" id="btnLoginToEdit" hidden>เข้าสู่ระบบเพื่อแก้ไข</button>
                     <button class="btn btn-light" type="button" data-bs-dismiss="modal">ยกเลิก</button>
                     <button class="btn btn-primary" type="submit" id="btnSaveEvent">บันทึกงาน</button>
                 </div>

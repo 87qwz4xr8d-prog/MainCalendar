@@ -13,8 +13,6 @@ final class EventController extends Controller
 {
     public function index(): void
     {
-        require_login();
-
         $start = $this->dateTime((string) ($_GET['start'] ?? ''));
         $end = $this->dateTime((string) ($_GET['end'] ?? ''));
         if (!$start || !$end || $end <= $start) {
@@ -27,7 +25,8 @@ final class EventController extends Controller
         }
 
         $departmentIds = array_map('intval', explode(',', (string) ($_GET['departments'] ?? '')));
-        $mine = (($_GET['mine'] ?? '0') === '1');
+        $viewer = current_user();
+        $mine = $viewer && (($_GET['mine'] ?? '0') === '1');
         $query = mb_substr(trim((string) ($_GET['q'] ?? '')), 0, 100);
         $limit = $query !== '' ? 20 : 1000;
 
@@ -35,7 +34,7 @@ final class EventController extends Controller
             $start->format('Y-m-d H:i:s'),
             $end->format('Y-m-d H:i:s'),
             $departmentIds,
-            $mine ? (int) current_user()['id'] : null,
+            $mine ? (int) $viewer['id'] : null,
             $query,
             $limit
         );

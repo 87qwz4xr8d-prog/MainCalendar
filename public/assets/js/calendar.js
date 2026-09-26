@@ -62,10 +62,13 @@
             renderFilters();
             loadEvents();
         });
-        document.getElementById('mineOnly').addEventListener('change', (event) => {
+        document.getElementById('mineOnly')?.addEventListener('change', (event) => {
             state.mineOnly = event.target.checked;
             localStorage.setItem('cc.mine', state.mineOnly ? '1' : '0');
             loadEvents();
+        });
+        document.getElementById('btnLoginToEdit').addEventListener('click', () => {
+            window.location = CAL.endpoints.login;
         });
         document.getElementById('eventAllDay').addEventListener('change', syncAllDay);
         form.addEventListener('submit', saveEvent);
@@ -306,7 +309,10 @@
             label.append(input, swatch, name);
             box.append(label);
         });
-        document.getElementById('mineOnly').checked = state.mineOnly;
+        const mineOnly = document.getElementById('mineOnly');
+        if (mineOnly) {
+            mineOnly.checked = state.mineOnly;
+        }
     }
 
     function renderMini() {
@@ -624,7 +630,27 @@
         });
     }
 
+    function askLogin() {
+        Swal.fire({
+            icon: 'info',
+            title: 'กรุณาเข้าสู่ระบบ',
+            text: 'ต้องเข้าสู่ระบบก่อนเพิ่ม แก้ไข หรือลบงาน',
+            confirmButtonText: 'เข้าสู่ระบบ',
+            showCancelButton: true,
+            cancelButtonText: 'ยกเลิก',
+            confirmButtonColor: '#1a73e8'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location = CAL.endpoints.login;
+            }
+        });
+    }
+
     function openCreate(preset) {
+        if (!CAL.me) {
+            askLogin();
+            return;
+        }
         if (!preset) {
             const now = new Date();
             let minutes = 9 * 60;
@@ -647,6 +673,7 @@
         document.getElementById('eventModalTitle').textContent = event ? (locked ? 'รายละเอียดงาน' : 'แก้ไขงาน') : 'สร้างงาน';
         document.getElementById('btnSaveEvent').hidden = locked;
         document.getElementById('btnDeleteEvent').hidden = !(event && event.can_edit);
+        document.getElementById('btnLoginToEdit').hidden = Boolean(CAL.me);
         setLocked(false);
         if (event) {
             document.getElementById('eventId').value = String(event.id);
@@ -713,6 +740,11 @@
                 },
                 body: JSON.stringify(payload)
             });
+            if (response.status === 401) {
+                modal.hide();
+                askLogin();
+                return;
+            }
             const data = await response.json();
             if (!response.ok || !data.ok) {
                 throw new Error(data.message || 'บันทึกไม่สำเร็จ');
@@ -791,6 +823,11 @@
             },
             body: JSON.stringify({ id: state.editing.id })
         });
+        if (response.status === 401) {
+            modal.hide();
+            askLogin();
+            return;
+        }
         const data = await response.json();
         if (!response.ok || !data.ok) {
             Swal.fire({ icon: 'error', title: 'ลบไม่สำเร็จ', text: data.message || '', confirmButtonColor: '#1a73e8' });

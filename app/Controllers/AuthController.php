@@ -60,7 +60,7 @@ final class AuthController extends Controller
         verify_csrf();
         Auth::logout();
         flash('success', 'ออกจากระบบแล้ว');
-        redirect('login');
+        redirect('calendar');
     }
 
     private function fail(string $message, string $email): never

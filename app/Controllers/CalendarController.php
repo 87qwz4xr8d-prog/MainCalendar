@@ -11,8 +11,6 @@ final class CalendarController extends Controller
 {
     public function index(): void
     {
-        require_login();
-
         $departments = array_map(
             fn (array $row): array => [
                 'id' => (int) $row['id'],

@@ -49,6 +49,8 @@
                     </li>
                 </ul>
             </div>
+        <?php else: ?>
+            <a class="btn btn-primary ms-auto" href="<?= e(url('login')) ?>">เข้าสู่ระบบ</a>
         <?php endif; ?>
     </header>
     <main class="<?= !empty($fullWidth) ? 'main-flush' : 'main-page' ?>">
