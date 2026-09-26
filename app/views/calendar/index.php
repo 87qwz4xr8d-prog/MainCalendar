@@ -34,6 +34,7 @@ $cal = [
             <button type="button" data-view="day">วัน</button>
             <button type="button" data-view="week">สัปดาห์</button>
             <button type="button" data-view="month">เดือน</button>
+            <button type="button" data-view="year">ปี</button>
         </div>
     </div>
     <div id="calProgress" class="cal-progress" hidden></div>

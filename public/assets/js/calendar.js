@@ -28,7 +28,7 @@
 
     function init() {
         const savedView = localStorage.getItem('cc.view');
-        state.view = ['day', 'week', 'month'].includes(savedView) ? savedView : 'month';
+        state.view = ['day', 'week', 'month', 'year'].includes(savedView) ? savedView : 'month';
         state.selected = loadSelected();
         state.mineOnly = localStorage.getItem('cc.mine') === '1';
         bind();
@@ -132,6 +132,10 @@
     function shift(direction) {
         if (direction === 0) {
             state.cursor = startOfDay(new Date());
+        } else if (state.view === 'year') {
+            const next = new Date(state.cursor);
+            next.setFullYear(next.getFullYear() + direction);
+            state.cursor = next;
         } else if (state.view === 'month') {
             const next = new Date(state.cursor);
             next.setMonth(next.getMonth() + direction);
@@ -183,7 +187,9 @@
             button.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
         renderMini();
-        if (state.view === 'month') {
+        if (state.view === 'year') {
+            renderYear();
+        } else if (state.view === 'month') {
             renderMonth();
         } else {
             renderTimeGrid(state.view === 'week' ? weekDays(state.cursor) : [startOfDay(state.cursor)]);
@@ -192,6 +198,9 @@
 
     function titleText() {
         const date = state.cursor;
+        if (state.view === 'year') {
+            return String(date.getFullYear());
+        }
         if (state.view === 'month') {
             return `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
         }
@@ -204,6 +213,70 @@
         const sameMonth = start.getMonth() === end.getMonth();
         const startLabel = sameMonth ? String(start.getDate()) : `${start.getDate()} ${MONTHS_SHORT[start.getMonth()]}`;
         return `${startLabel} – ${end.getDate()} ${MONTHS_SHORT[end.getMonth()]} ${end.getFullYear()}`;
+    }
+
+    function renderYear() {
+        grid.className = 'cal-grid is-year';
+        grid.replaceChildren();
+        const wrap = document.createElement('div');
+        wrap.className = 'year-wrap';
+        const board = document.createElement('div');
+        board.className = 'year-grid';
+        const year = state.cursor.getFullYear();
+        for (let month = 0; month < 12; month += 1) {
+            board.append(yearMonth(year, month));
+        }
+        wrap.append(board);
+        grid.append(wrap);
+    }
+
+    function yearMonth(year, month) {
+        const section = document.createElement('section');
+        section.className = 'year-month';
+        const heading = document.createElement('button');
+        heading.type = 'button';
+        heading.className = 'year-month-name';
+        heading.textContent = MONTHS[month];
+        heading.addEventListener('click', () => {
+            const day = Math.min(state.cursor.getDate(), new Date(year, month + 1, 0).getDate());
+            state.cursor = new Date(year, month, day);
+            state.miniMonth = new Date(year, month, 1);
+            setView('month');
+        });
+        const days = document.createElement('div');
+        days.className = 'year-days';
+        DAYS_SHORT.forEach((name) => {
+            const label = document.createElement('span');
+            label.className = 'year-dow';
+            label.textContent = name;
+            days.append(label);
+        });
+        monthGrid(new Date(year, month, 1)).forEach((day) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'year-day';
+            button.textContent = String(day.getDate());
+            const inMonth = day.getMonth() === month;
+            if (!inMonth) {
+                button.classList.add('is-out');
+            }
+            if (sameDay(day, new Date())) {
+                button.classList.add('is-today');
+            }
+            const count = state.events.filter((item) => coversDay(item, day)).length;
+            if (count > 0 && inMonth) {
+                button.classList.add('has-events');
+                button.title = count === 1 ? '1 งาน' : `${count} งาน`;
+            }
+            button.addEventListener('click', () => {
+                state.cursor = startOfDay(day);
+                state.miniMonth = new Date(day.getFullYear(), day.getMonth(), 1);
+                setView('day');
+            });
+            days.append(button);
+        });
+        section.append(heading, days);
+        return section;
     }
 
     function renderFilters() {
@@ -797,6 +870,12 @@
     }
 
     function visibleRange() {
+        if (state.view === 'year') {
+            const year = state.cursor.getFullYear();
+            const first = monthGrid(new Date(year, 0, 1))[0];
+            const last = monthGrid(new Date(year, 11, 1))[41];
+            return { start: formatSQL(first), end: formatSQL(addDays(last, 1)) };
+        }
         if (state.view === 'month') {
             const days = monthGrid(state.cursor);
             return { start: formatSQL(days[0]), end: formatSQL(addDays(days[41], 1)) };

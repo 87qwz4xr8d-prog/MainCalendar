@@ -322,6 +322,48 @@ button, input, select, textarea { font-family: inherit; }
 .now-line { position: absolute; left: 0; right: 0; height: 2px; background: #ea4335; z-index: 4; pointer-events: none; }
 .now-line span { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #ea4335; left: -5px; top: -4px; }
 
+.cal-grid.is-year { overflow: auto; }
+.year-wrap { padding: 16px 18px 28px; }
+.year-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 12px; }
+.year-month-name {
+    border: 0;
+    background: transparent;
+    font-weight: 650;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: var(--text);
+}
+.year-month-name:hover { background: #e8f0fe; color: var(--blue); }
+.year-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
+.year-dow { color: var(--muted); font-size: 11px; padding: 4px 0; }
+.year-day {
+    border: 0;
+    background: transparent;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 12px;
+    position: relative;
+    color: var(--text);
+}
+.year-day.is-out { color: #dadce0; }
+.year-day.is-today { background: var(--blue); color: #fff; }
+.year-day.has-events { font-weight: 700; }
+.year-day.has-events::after {
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--blue);
+    left: 50%;
+    bottom: 1px;
+    transform: translateX(-50%);
+}
+.year-day.is-today.has-events::after { background: #fff; }
+.year-day:hover { background: #f1f3f4; }
+.year-day.is-today:hover { background: var(--blue-dark); color: #fff; }
+
 @media (min-width: 992px) {
     .cal-side.offcanvas-lg {
         position: static;
@@ -334,8 +376,13 @@ button, input, select, textarea { font-family: inherit; }
     }
 }
 
+@media (max-width: 1200px) {
+    .year-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
 @media (max-width: 800px) {
     .login-wrap { grid-template-columns: 1fr; }
     .login-hero, .login-panel { padding: 28px 22px; }
     .user-meta { display: none; }
+    .year-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

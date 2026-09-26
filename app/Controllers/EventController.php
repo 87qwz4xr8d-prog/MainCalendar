@@ -22,7 +22,7 @@ final class EventController extends Controller
         }
 
         $days = (int) $start->diff($end)->days;
-        if ($days > 400) {
+        if ($days > 450) {
             json_response(['ok' => false, 'message' => 'ช่วงวันที่ยาวเกินไป'], 422);
         }
 
