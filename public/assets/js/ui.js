@@ -7,10 +7,10 @@ document.addEventListener('click', (event) => {
     if (!form) {
         return;
     }
-    const email = form.querySelector('[name="email"]');
+    const identity = form.querySelector('[name="login"], [name="email"]');
     const password = form.querySelector('[name="password"]');
-    if (email) {
-        email.value = button.dataset.fill || '';
+    if (identity) {
+        identity.value = button.dataset.fill || '';
     }
     if (password) {
         password.value = button.dataset.pass || '';

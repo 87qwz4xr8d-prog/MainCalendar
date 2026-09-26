@@ -12,6 +12,12 @@
             <label class="form-label" for="name">ชื่อ</label>
             <input class="form-control" id="name" name="name" value="<?= e($currentUser['name']) ?>" maxlength="120" required>
         </div>
+        <?php if (($currentUser['employee_code'] ?? '') !== ''): ?>
+            <div class="mb-3">
+                <label class="form-label" for="employee_code">รหัสพนักงาน</label>
+                <input class="form-control" id="employee_code" value="<?= e($currentUser['employee_code']) ?>" readonly>
+            </div>
+        <?php endif; ?>
         <div class="mb-3">
             <label class="form-label" for="email">อีเมล</label>
             <input class="form-control" id="email" value="<?= e($currentUser['email']) ?>" readonly>

@@ -15,7 +15,7 @@ final class UserModel
     public function allWithDepartment(): array
     {
         return $this->db->all(
-            'SELECT u.id, u.department_id, u.name, u.email, u.role, u.is_active,
+            'SELECT u.id, u.department_id, u.name, u.employee_code, u.email, u.role, u.is_active,
                     d.name AS department_name, d.color AS department_color
              FROM users u
              INNER JOIN departments d ON d.id = u.department_id
@@ -26,7 +26,7 @@ final class UserModel
     public function find(int $id): ?array
     {
         return $this->db->one(
-            'SELECT u.id, u.department_id, u.name, u.email, u.role, u.is_active,
+            'SELECT u.id, u.department_id, u.name, u.employee_code, u.email, u.role, u.is_active,
                     d.name AS department_name, d.color AS department_color
              FROM users u
              INNER JOIN departments d ON d.id = u.department_id
@@ -39,7 +39,7 @@ final class UserModel
     public function findByEmail(string $email): ?array
     {
         return $this->db->one(
-            'SELECT u.id, u.department_id, u.name, u.email, u.password_hash, u.role, u.is_active,
+            'SELECT u.id, u.department_id, u.name, u.employee_code, u.email, u.password_hash, u.role, u.is_active,
                     d.name AS department_name
              FROM users u
              INNER JOIN departments d ON d.id = u.department_id
@@ -47,6 +47,34 @@ final class UserModel
             's',
             [$email]
         );
+    }
+
+    public function findByEmployeeCode(string $code): ?array
+    {
+        return $this->db->one(
+            'SELECT u.id, u.department_id, u.name, u.employee_code, u.email, u.password_hash, u.role, u.is_active,
+                    d.name AS department_name
+             FROM users u
+             INNER JOIN departments d ON d.id = u.department_id
+             WHERE u.employee_code = ?',
+            's',
+            [$code]
+        );
+    }
+
+    public function employeeCodeTaken(string $code, ?int $exceptId = null): bool
+    {
+        if ($exceptId) {
+            $row = $this->db->one(
+                'SELECT id FROM users WHERE employee_code = ? AND id <> ?',
+                'si',
+                [$code, $exceptId]
+            );
+        } else {
+            $row = $this->db->one('SELECT id FROM users WHERE employee_code = ?', 's', [$code]);
+        }
+
+        return $row !== null;
     }
 
     public function emailTaken(string $email, ?int $exceptId = null): bool
@@ -76,16 +104,17 @@ final class UserModel
     public function create(
         int $departmentId,
         string $name,
+        ?string $employeeCode,
         string $email,
         string $passwordHash,
         string $role,
         bool $isActive
     ): int {
         return $this->db->insert(
-            'INSERT INTO users (department_id, name, email, password_hash, role, is_active)
-             VALUES (?, ?, ?, ?, ?, ?)',
-            'issssi',
-            [$departmentId, $name, $email, $passwordHash, $role, $isActive ? 1 : 0]
+            'INSERT INTO users (department_id, name, employee_code, email, password_hash, role, is_active)
+             VALUES (?, ?, ?, ?, ?, ?, ?)',
+            'isssssi',
+            [$departmentId, $name, $employeeCode, $email, $passwordHash, $role, $isActive ? 1 : 0]
         );
     }
 
@@ -93,16 +122,17 @@ final class UserModel
         int $id,
         int $departmentId,
         string $name,
+        ?string $employeeCode,
         string $email,
         string $role,
         bool $isActive
     ): void {
         $this->db->execute(
             'UPDATE users
-             SET department_id = ?, name = ?, email = ?, role = ?, is_active = ?
+             SET department_id = ?, name = ?, employee_code = ?, email = ?, role = ?, is_active = ?
              WHERE id = ?',
-            'isssii',
-            [$departmentId, $name, $email, $role, $isActive ? 1 : 0, $id]
+            'isssssii',
+            [$departmentId, $name, $employeeCode, $email, $role, $isActive ? 1 : 0, $id]
         );
     }
 

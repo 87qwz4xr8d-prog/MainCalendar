@@ -29,11 +29,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const title = document.getElementById('userModalTitle');
         const password = document.getElementById('userPassword');
         const hint = document.getElementById('passwordHint');
+        const syncEmployeeCode = () => {
+            const code = document.getElementById('userCode');
+            const note = document.getElementById('userCodeHint');
+            const isEmployee = document.getElementById('userRole').value === 'employee';
+            code.required = isEmployee;
+            note.textContent = isEmployee
+                ? 'พนักงานใช้รหัสนี้กับรหัสผ่านเพื่อเข้าสู่ระบบ'
+                : 'ผู้ดูแลเข้าสู่ระบบด้วยอีเมลค่าเริ่มต้น ไม่ใช้รหัสพนักงาน';
+        };
+        document.getElementById('userRole').addEventListener('change', syncEmployeeCode);
         const openUser = (user) => {
             form.reset();
             document.getElementById('userActive').checked = true;
             if (!user) {
                 document.getElementById('userId').value = '';
+                document.getElementById('userCode').value = '';
                 password.required = true;
                 document.getElementById('userPasswordConfirm').required = true;
                 hint.textContent = 'อย่างน้อย 8 ตัวอักษร และต้องมีทั้งตัวอักษรกับตัวเลข';
@@ -41,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 document.getElementById('userId').value = user.id;
                 document.getElementById('userName').value = user.name;
+                document.getElementById('userCode').value = user.employee_code || '';
                 document.getElementById('userEmail').value = user.email;
                 document.getElementById('userDepartment').value = String(user.department_id);
                 document.getElementById('userRole').value = user.role;
@@ -50,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 hint.textContent = 'เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน';
                 title.textContent = 'แก้ไขพนักงาน';
             }
+            syncEmployeeCode();
             bootstrap.Modal.getOrCreateInstance(userModal).show();
         };
         document.getElementById('btnNewUser').addEventListener('click', () => openUser(null));

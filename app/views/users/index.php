@@ -12,13 +12,14 @@ $actorId = (int) $currentUser['id'];
 </div>
 <div class="panel">
     <div class="p-3 border-bottom">
-        <input class="form-control" id="userFilter" type="search" placeholder="ค้นหาชื่อ อีเมล หรือแผนก">
+        <input class="form-control" id="userFilter" type="search" placeholder="ค้นหาชื่อ รหัสพนักงาน อีเมล หรือแผนก">
     </div>
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0" id="userTable">
             <thead>
             <tr>
                 <th>ชื่อ</th>
+                <th>รหัสพนักงาน</th>
                 <th>อีเมล</th>
                 <th>แผนก</th>
                 <th>บทบาท</th>
@@ -28,13 +29,14 @@ $actorId = (int) $currentUser['id'];
             </thead>
             <tbody>
             <?php if ($users === []): ?>
-                <tr><td colspan="6" class="text-muted p-4">ยังไม่มีพนักงาน</td></tr>
+                <tr><td colspan="7" class="text-muted p-4">ยังไม่มีพนักงาน</td></tr>
             <?php endif; ?>
             <?php foreach ($users as $user): ?>
                 <?php
                 $payload = [
                     'id' => (int) $user['id'],
                     'name' => $user['name'],
+                    'employee_code' => $user['employee_code'] ?? '',
                     'email' => $user['email'],
                     'department_id' => (int) $user['department_id'],
                     'role' => $user['role'],
@@ -44,6 +46,7 @@ $actorId = (int) $currentUser['id'];
                 ?>
                 <tr>
                     <td><?= e($user['name']) ?></td>
+                    <td><?= e($user['employee_code'] ?? '') ?></td>
                     <td><?= e($user['email']) ?></td>
                     <td><span class="swatch me-1" style="background: <?= e($user['department_color']) ?>"></span><?= e($user['department_name']) ?></td>
                     <td><?= $user['role'] === 'admin' ? 'ผู้ดูแล' : 'พนักงาน' ?></td>
@@ -77,6 +80,11 @@ $actorId = (int) $currentUser['id'];
                     <div class="mb-3">
                         <label class="form-label" for="userName">ชื่อ</label>
                         <input class="form-control" id="userName" name="name" maxlength="120" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="userCode">รหัสพนักงาน</label>
+                        <input class="form-control" id="userCode" name="employee_code" maxlength="20" autocomplete="off">
+                        <p class="text-muted small mt-1 mb-0" id="userCodeHint"></p>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="userEmail">อีเมล</label>

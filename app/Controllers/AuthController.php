@@ -24,29 +24,46 @@ final class AuthController extends Controller
     {
         verify_csrf();
 
-        $email = mb_strtolower(trim((string) ($_POST['email'] ?? '')));
+        $login = trim((string) ($_POST['login'] ?? ''));
         $password = (string) ($_POST['password'] ?? '');
 
-        if ($email === '' || $password === '') {
-            $this->fail('กรุณากรอกอีเมลและรหัสผ่าน', $email);
-        }
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->fail('รูปแบบอีเมลไม่ถูกต้อง', $email);
+        if ($login === '' || $password === '') {
+            $this->fail('กรุณากรอกรหัสพนักงานและรหัสผ่าน', $login);
         }
         if ($this->throttled()) {
-            $this->fail('พยายามเข้าสู่ระบบหลายครั้งเกินไป กรุณารอ 2 นาที', $email);
+            $this->fail('พยายามเข้าสู่ระบบหลายครั้งเกินไป กรุณารอ 2 นาที', $login);
         }
 
-        $user = (new UserModel($this->db))->findByEmail($email);
+        $users = new UserModel($this->db);
+        if (str_contains($login, '@')) {
+            $email = mb_strtolower($login);
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $this->fail('รูปแบบอีเมลผู้ดูแลไม่ถูกต้อง', $login);
+            }
+            $user = $users->findByEmail($email);
+            if ($user && ($user['role'] ?? '') !== 'admin') {
+                $user = null;
+            }
+        } else {
+            $code = mb_strtoupper($login);
+            if (!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,19}$/', $code)) {
+                $this->fail('รูปแบบรหัสพนักงานไม่ถูกต้อง', $login);
+            }
+            $user = $users->findByEmployeeCode($code);
+            if ($user && ($user['role'] ?? '') === 'admin') {
+                $user = null;
+            }
+        }
+
         $hash = $user['password_hash'] ?? self::DUMMY_HASH;
         $valid = password_verify($password, $hash);
 
         if (!$user || !$valid) {
             $this->hitFail();
-            $this->fail('อีเมลหรือรหัสผ่านไม่ถูกต้อง', $email);
+            $this->fail('รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง', $login);
         }
         if ((int) $user['is_active'] !== 1) {
-            $this->fail('บัญชีนี้ถูกปิดใช้งาน กรุณาติดต่อผู้ดูแลระบบ', $email);
+            $this->fail('บัญชีนี้ถูกปิดใช้งาน กรุณาติดต่อผู้ดูแลระบบ', $login);
         }
 
         unset($_SESSION['login_fail']);
@@ -63,9 +80,9 @@ final class AuthController extends Controller
         redirect('calendar');
     }
 
-    private function fail(string $message, string $email): never
+    private function fail(string $message, string $login): never
     {
-        $_SESSION['old'] = ['email' => $email];
+        $_SESSION['old'] = ['login' => $login];
         flash('error', $message);
         redirect('login');
     }

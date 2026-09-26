@@ -27,6 +27,7 @@ final class UserController extends Controller
         $id = (int) ($_POST['id'] ?? 0);
         $name = preg_replace('/\s+/u', ' ', trim((string) ($_POST['name'] ?? ''))) ?? '';
         $email = mb_strtolower(trim((string) ($_POST['email'] ?? '')));
+        $employeeCode = mb_strtoupper(trim((string) ($_POST['employee_code'] ?? '')));
         $departmentId = (int) ($_POST['department_id'] ?? 0);
         $role = (string) ($_POST['role'] ?? 'employee');
         $isActive = filter_var($_POST['is_active'] ?? '0', FILTER_VALIDATE_BOOLEAN);
@@ -59,6 +60,18 @@ final class UserController extends Controller
         if ($users->emailTaken($email, $id > 0 ? $id : null)) {
             flash('error', 'อีเมลนี้ถูกใช้แล้ว');
             redirect('users');
+        }
+        if ($role === 'employee') {
+            if (!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,19}$/', $employeeCode)) {
+                flash('error', 'รหัสพนักงานใช้ตัวอักษรอังกฤษ ตัวเลข ขีดกลาง หรือขีดล่าง ความยาว 2–20 ตัว');
+                redirect('users');
+            }
+            if ($users->employeeCodeTaken($employeeCode, $id > 0 ? $id : null)) {
+                flash('error', 'รหัสพนักงานนี้ถูกใช้แล้ว');
+                redirect('users');
+            }
+        } else {
+            $employeeCode = '';
         }
 
         $actorId = (int) current_user()['id'];
@@ -94,14 +107,15 @@ final class UserController extends Controller
             }
         }
 
+        $storedCode = $employeeCode === '' ? null : $employeeCode;
         if ($existing) {
-            $users->update($id, $departmentId, $name, $email, $role, $isActive);
+            $users->update($id, $departmentId, $name, $storedCode, $email, $role, $isActive);
             if ($password !== '') {
                 $users->updatePassword($id, password_hash($password, PASSWORD_DEFAULT));
             }
             flash('success', 'บันทึกข้อมูลพนักงานแล้ว');
         } else {
-            $users->create($departmentId, $name, $email, password_hash($password, PASSWORD_DEFAULT), $role, $isActive);
+            $users->create($departmentId, $name, $storedCode, $email, password_hash($password, PASSWORD_DEFAULT), $role, $isActive);
             flash('success', 'เพิ่มพนักงานแล้ว');
         }
 

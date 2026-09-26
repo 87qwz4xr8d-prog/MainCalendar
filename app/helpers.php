@@ -156,6 +156,30 @@ function pull_old(): array
     return is_array($old) ? $old : [];
 }
 
+function ensure_employee_codes(\App\Core\Database $db): void
+{
+    $column = $db->one("SHOW COLUMNS FROM users LIKE 'employee_code'");
+    if ($column === null) {
+        $db->execute('ALTER TABLE users ADD COLUMN employee_code VARCHAR(20) NULL AFTER name');
+        $db->execute('ALTER TABLE users ADD UNIQUE KEY uq_users_employee_code (employee_code)');
+    }
+
+    $seeds = [
+        'somchai@company.local' => 'EMP001',
+        'malee@company.local' => 'EMP002',
+        'anan@company.local' => 'EMP003',
+        'nicha@company.local' => 'EMP004',
+        'wichai@company.local' => 'EMP005',
+    ];
+    foreach ($seeds as $email => $code) {
+        $db->execute(
+            'UPDATE users SET employee_code = ? WHERE email = ? AND employee_code IS NULL',
+            'ss',
+            [$code, $email]
+        );
+    }
+}
+
 function current_user(): ?array
 {
     $user = $_SESSION['user'] ?? null;

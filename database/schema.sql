@@ -28,12 +28,14 @@ CREATE TABLE users (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   department_id INT UNSIGNED NOT NULL,
   name VARCHAR(120) NOT NULL,
+  employee_code VARCHAR(20) NULL,
   email VARCHAR(190) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   role ENUM('admin', 'employee') NOT NULL DEFAULT 'employee',
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY uq_users_email (email),
+  UNIQUE KEY uq_users_employee_code (employee_code),
   CONSTRAINT fk_users_department FOREIGN KEY (department_id) REFERENCES departments (id)
     ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -69,14 +71,15 @@ INSERT INTO departments (id, name, color, description) VALUES
 (5, 'ฝ่ายไอที', '#f9ab00', 'ระบบภายในและโครงสร้างพื้นฐาน'),
 (6, 'ฝ่ายปฏิบัติการ', '#8e24aa', 'คลังสินค้าและการส่งมอบ');
 
--- รหัสผ่านทดลอง: Admin@1234 และ Employee@1234
-INSERT INTO users (id, department_id, name, email, password_hash, role, is_active) VALUES
-(1, 1, 'ผู้ดูแลระบบ', 'admin@company.local', '$2y$12$NxbHBrQC5eoQ8xrhTTjNKumlhhCm/x.bm679B3TdufvwPRpRopFdq', 'admin', 1),
-(2, 3, 'สมชาย ใจดี', 'somchai@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),
-(3, 2, 'มาลี วงศ์สุข', 'malee@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),
-(4, 4, 'อนันต์ ศรีเงิน', 'anan@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),
-(5, 5, 'ณิชา พัฒนา', 'nicha@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),
-(6, 6, 'วิชัย คลังดี', 'wichai@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1);
+-- ผู้ดูแลเข้าด้วยอีเมลค่าเริ่มต้น รหัสผ่าน Admin@1234
+-- พนักงานเข้าด้วยรหัสพนักงาน รหัสผ่าน Employee@1234
+INSERT INTO users (id, department_id, name, employee_code, email, password_hash, role, is_active) VALUES
+(1, 1, 'ผู้ดูแลระบบ', NULL, 'admin@company.local', '$2y$12$NxbHBrQC5eoQ8xrhTTjNKumlhhCm/x.bm679B3TdufvwPRpRopFdq', 'admin', 1),
+(2, 3, 'สมชาย ใจดี', 'EMP001', 'somchai@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),
+(3, 2, 'มาลี วงศ์สุข', 'EMP002', 'malee@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),
+(4, 4, 'อนันต์ ศรีเงิน', 'EMP003', 'anan@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),
+(5, 5, 'ณิชา พัฒนา', 'EMP004', 'nicha@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),
+(6, 6, 'วิชัย คลังดี', 'EMP005', 'wichai@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1);
 
 INSERT INTO events (user_id, department_id, title, description, location, start_at, end_at, all_day, status) VALUES
 (2, 3, 'ประชุมทีมขายประจำสัปดาห์', 'สรุปเป้าขายและงานค้างของสัปดาห์', 'ห้องประชุม A', CONCAT(CURDATE(), ' 09:00:00'), CONCAT(CURDATE(), ' 10:30:00'), 0, 'in_progress'),

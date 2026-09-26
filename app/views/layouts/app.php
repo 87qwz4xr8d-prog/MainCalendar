@@ -38,7 +38,7 @@
                     </span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><h6 class="dropdown-header"><?= e($currentUser['email']) ?></h6></li>
+                    <li><h6 class="dropdown-header"><?= e(($currentUser['employee_code'] ?? '') !== '' ? $currentUser['employee_code'] : $currentUser['email']) ?></h6></li>
                     <li><a class="dropdown-item" href="<?= e(url('profile')) ?>"><i class="bi bi-person me-2"></i>โปรไฟล์</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>

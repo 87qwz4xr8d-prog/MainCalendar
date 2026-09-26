@@ -17,6 +17,7 @@ use App\Core\Database;
 try {
     $db = Database::fromConfig(require dirname(__DIR__) . '/app/config/database.php');
     $db->one('SELECT id FROM departments LIMIT 1');
+    ensure_employee_codes($db);
 } catch (Throwable $e) {
     view('errors/setup', [
         'error' => $e->getMessage(),

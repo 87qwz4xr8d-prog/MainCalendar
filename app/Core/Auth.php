@@ -43,6 +43,7 @@ final class Auth
             'id' => (int) $row['id'],
             'name' => (string) $row['name'],
             'email' => (string) $row['email'],
+            'employee_code' => (string) ($row['employee_code'] ?? ''),
             'role' => (string) $row['role'],
             'department_id' => (int) $row['department_id'],
             'department_name' => (string) ($row['department_name'] ?? ''),
