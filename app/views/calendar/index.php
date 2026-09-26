@@ -20,6 +20,9 @@ $cal = [
 ?>
 <div class="cal-page">
     <div class="cal-toolbar">
+        <button class="btn btn-outline-secondary d-none d-lg-inline-flex align-items-center justify-content-center" type="button" id="btnToggleSide" aria-controls="calSide" aria-expanded="true" aria-label="ยุบแถบด้านข้าง" title="ยุบแถบด้านข้าง">
+            <i class="bi bi-layout-sidebar-inset"></i>
+        </button>
         <button class="btn btn-outline-secondary d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#calSide">ตัวกรอง</button>
         <button class="btn btn-outline-secondary" type="button" id="btnToday">วันนี้</button>
         <button class="btn btn-light" type="button" id="btnPrev" aria-label="ก่อนหน้า"><i class="bi bi-chevron-left"></i></button>

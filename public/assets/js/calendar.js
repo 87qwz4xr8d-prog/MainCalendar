@@ -19,6 +19,10 @@
     };
 
     const grid = document.getElementById('calGrid');
+    const page = document.querySelector('.cal-page');
+    if (page && localStorage.getItem('cc.side') === '0') {
+        page.classList.add('is-side-collapsed');
+    }
     const form = document.getElementById('eventForm');
     const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('eventModal'));
     let searchTimer = null;
@@ -38,6 +42,8 @@
     }
 
     function bind() {
+        document.getElementById('btnToggleSide').addEventListener('click', toggleSide);
+        syncSideButton();
         document.getElementById('btnToday').addEventListener('click', () => shift(0));
         document.getElementById('btnPrev').addEventListener('click', () => shift(-1));
         document.getElementById('btnNext').addEventListener('click', () => shift(1));
@@ -942,6 +948,22 @@
 
     function setLoading(active) {
         document.getElementById('calProgress').hidden = !active;
+    }
+
+    function toggleSide() {
+        page.classList.toggle('is-side-collapsed');
+        localStorage.setItem('cc.side', page.classList.contains('is-side-collapsed') ? '0' : '1');
+        syncSideButton();
+    }
+
+    function syncSideButton() {
+        const button = document.getElementById('btnToggleSide');
+        const collapsed = page.classList.contains('is-side-collapsed');
+        const label = collapsed ? 'ขยายแถบด้านข้าง' : 'ยุบแถบด้านข้าง';
+        button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        button.setAttribute('aria-label', label);
+        button.title = label;
+        button.querySelector('i').className = collapsed ? 'bi bi-layout-sidebar' : 'bi bi-layout-sidebar-inset';
     }
 
     function closeSide() {
