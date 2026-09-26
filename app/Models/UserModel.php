@@ -131,7 +131,7 @@ final class UserModel
             'UPDATE users
              SET department_id = ?, name = ?, employee_code = ?, email = ?, role = ?, is_active = ?
              WHERE id = ?',
-            'isssssii',
+            'issssii',
             [$departmentId, $name, $employeeCode, $email, $role, $isActive ? 1 : 0, $id]
         );
     }
