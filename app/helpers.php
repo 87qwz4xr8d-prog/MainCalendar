@@ -172,7 +172,9 @@ function require_login(): void
         json_response(['ok' => false, 'message' => 'กรุณาเข้าสู่ระบบ'], 401);
     }
 
-    flash('warning', 'กรุณาเข้าสู่ระบบก่อนใช้งาน');
+    if (current_route() !== 'calendar') {
+        flash('warning', 'กรุณาเข้าสู่ระบบก่อนใช้งาน');
+    }
     redirect('login');
 }
 
