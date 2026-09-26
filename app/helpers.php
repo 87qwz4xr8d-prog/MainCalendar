@@ -165,17 +165,31 @@ function ensure_employee_codes(\App\Core\Database $db): void
     }
 
     $seeds = [
+        'admin@company.local' => 'ADMIN',
         'somchai@company.local' => 'EMP001',
         'malee@company.local' => 'EMP002',
         'anan@company.local' => 'EMP003',
         'nicha@company.local' => 'EMP004',
         'wichai@company.local' => 'EMP005',
     ];
-    foreach ($seeds as $email => $code) {
+    $missing = $db->all(
+        "SELECT id, email FROM users WHERE employee_code IS NULL OR employee_code = ''"
+    );
+    foreach ($missing as $row) {
+        $id = (int) $row['id'];
+        $code = $seeds[(string) $row['email']] ?? ('U' . str_pad((string) $id, 4, '0', STR_PAD_LEFT));
+        $taken = $db->one(
+            'SELECT id FROM users WHERE employee_code = ? AND id <> ?',
+            'si',
+            [$code, $id]
+        );
+        if ($taken) {
+            $code = 'U' . str_pad((string) $id, 4, '0', STR_PAD_LEFT);
+        }
         $db->execute(
-            'UPDATE users SET employee_code = ? WHERE email = ? AND employee_code IS NULL',
-            'ss',
-            [$code, $email]
+            "UPDATE users SET employee_code = ? WHERE id = ? AND (employee_code IS NULL OR employee_code = '')",
+            'si',
+            [$code, $id]
         );
     }
 }

@@ -32,11 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const syncEmployeeCode = () => {
             const code = document.getElementById('userCode');
             const note = document.getElementById('userCodeHint');
-            const isEmployee = document.getElementById('userRole').value === 'employee';
-            code.required = isEmployee;
-            note.textContent = isEmployee
-                ? 'พนักงานใช้รหัสนี้กับรหัสผ่านเพื่อเข้าสู่ระบบ'
-                : 'ผู้ดูแลเข้าสู่ระบบด้วยอีเมลค่าเริ่มต้น ไม่ใช้รหัสพนักงาน';
+            code.required = true;
+            note.textContent = 'ใช้รหัสนี้หรืออีเมลคู่กับรหัสผ่านเพื่อเข้าสู่ระบบ';
         };
         document.getElementById('userRole').addEventListener('change', syncEmployeeCode);
         const openUser = (user) => {

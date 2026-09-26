@@ -71,10 +71,11 @@ INSERT INTO departments (id, name, color, description) VALUES
 (5, 'ฝ่ายไอที', '#f9ab00', 'ระบบภายในและโครงสร้างพื้นฐาน'),
 (6, 'ฝ่ายปฏิบัติการ', '#8e24aa', 'คลังสินค้าและการส่งมอบ');
 
--- ผู้ดูแลเข้าด้วยอีเมลค่าเริ่มต้น รหัสผ่าน Admin@1234
--- พนักงานเข้าด้วยรหัสพนักงาน รหัสผ่าน Employee@1234
+-- ทุกบัญชีเข้าด้วยรหัสพนักงานหรืออีเมล
+-- ผู้ดูแล ADMIN รหัสผ่าน Admin@1234
+-- พนักงาน EMP001 รหัสผ่าน Employee@1234
 INSERT INTO users (id, department_id, name, employee_code, email, password_hash, role, is_active) VALUES
-(1, 1, 'ผู้ดูแลระบบ', NULL, 'admin@company.local', '$2y$12$NxbHBrQC5eoQ8xrhTTjNKumlhhCm/x.bm679B3TdufvwPRpRopFdq', 'admin', 1),
+(1, 1, 'ผู้ดูแลระบบ', 'ADMIN', 'admin@company.local', '$2y$12$NxbHBrQC5eoQ8xrhTTjNKumlhhCm/x.bm679B3TdufvwPRpRopFdq', 'admin', 1),
 (2, 3, 'สมชาย ใจดี', 'EMP001', 'somchai@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),
 (3, 2, 'มาลี วงศ์สุข', 'EMP002', 'malee@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),
 (4, 4, 'อนันต์ ศรีเงิน', 'EMP003', 'anan@company.local', '$2y$12$Y65r0lQqc7V9R5/QoSjQletFwXxHnn0yd6PtrTlmX0wQfP2H0suBC', 'employee', 1),

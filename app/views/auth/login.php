@@ -18,12 +18,12 @@
     </section>
     <section class="login-panel">
         <h2>เข้าสู่ระบบ</h2>
-        <p class="text-muted">พนักงานใช้รหัสพนักงาน ผู้ดูแลใช้บัญชีเริ่มต้น admin@company.local</p>
+        <p class="text-muted">เข้าสู่ระบบด้วยรหัสพนักงานหรืออีเมล แล้วตามด้วยรหัสผ่าน</p>
         <form method="post" action="<?= e(url('login')) ?>" class="login-form" autocomplete="on">
             <?= csrf_field() ?>
             <div class="mb-3">
-                <label class="form-label" for="login">รหัสพนักงาน</label>
-                <input class="form-control form-control-lg" type="text" id="login" name="login" value="<?= e($old['login'] ?? '') ?>" placeholder="เช่น EMP001" autocomplete="username" required autofocus>
+                <label class="form-label" for="login">รหัสพนักงานหรืออีเมล</label>
+                <input class="form-control form-control-lg" type="text" id="login" name="login" value="<?= e($old['login'] ?? '') ?>" placeholder="เช่น EMP001 หรือ name@company.local" autocomplete="username" required autofocus>
             </div>
             <div class="mb-4">
                 <label class="form-label" for="password">รหัสผ่าน</label>
@@ -32,14 +32,5 @@
             <button class="btn btn-primary btn-lg w-100" type="submit">เข้าสู่ระบบ</button>
         </form>
         <a class="d-inline-block mt-3" href="<?= e(url('calendar')) ?>">ดูปฏิทินโดยไม่เข้าสู่ระบบ</a>
-        <?php if (app_config('debug')): ?>
-            <div class="demo-box">
-                <p>บัญชีทดลอง</p>
-                <div class="d-flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-outline-secondary" type="button" data-fill="admin@company.local" data-pass="Admin@1234">ผู้ดูแลระบบ</button>
-                    <button class="btn btn-sm btn-outline-secondary" type="button" data-fill="EMP001" data-pass="Employee@1234">พนักงาน EMP001</button>
-                </div>
-            </div>
-        <?php endif; ?>
     </section>
 </div>

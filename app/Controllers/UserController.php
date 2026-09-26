@@ -61,17 +61,13 @@ final class UserController extends Controller
             flash('error', 'อีเมลนี้ถูกใช้แล้ว');
             redirect('users');
         }
-        if ($role === 'employee') {
-            if (!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,19}$/', $employeeCode)) {
-                flash('error', 'รหัสพนักงานใช้ตัวอักษรอังกฤษ ตัวเลข ขีดกลาง หรือขีดล่าง ความยาว 2–20 ตัว');
-                redirect('users');
-            }
-            if ($users->employeeCodeTaken($employeeCode, $id > 0 ? $id : null)) {
-                flash('error', 'รหัสพนักงานนี้ถูกใช้แล้ว');
-                redirect('users');
-            }
-        } else {
-            $employeeCode = '';
+        if (!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,19}$/', $employeeCode)) {
+            flash('error', 'รหัสพนักงานใช้ตัวอักษรอังกฤษ ตัวเลข ขีดกลาง หรือขีดล่าง ความยาว 2–20 ตัว');
+            redirect('users');
+        }
+        if ($users->employeeCodeTaken($employeeCode, $id > 0 ? $id : null)) {
+            flash('error', 'รหัสพนักงานนี้ถูกใช้แล้ว');
+            redirect('users');
         }
 
         $actorId = (int) current_user()['id'];

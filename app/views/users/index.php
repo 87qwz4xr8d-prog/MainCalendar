@@ -83,7 +83,7 @@ $actorId = (int) $currentUser['id'];
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="userCode">รหัสพนักงาน</label>
-                        <input class="form-control" id="userCode" name="employee_code" maxlength="20" autocomplete="off">
+                        <input class="form-control" id="userCode" name="employee_code" maxlength="20" autocomplete="off" required>
                         <p class="text-muted small mt-1 mb-0" id="userCodeHint"></p>
                     </div>
                     <div class="mb-3">
