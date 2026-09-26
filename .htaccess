@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# กันไม่ให้เปิดโฟลเดอร์ระบบและไฟล์ฐานข้อมูลตรง ๆ
+RewriteRule ^(?:app|database)(?:/|$) - [F,L]
+
+# ส่งคำขอที่ยังไม่อยู่ใน public เข้าเว็บรูท
+RewriteCond %{REQUEST_URI} !/public/
+RewriteRule ^(.*)$ public/$1 [L]
