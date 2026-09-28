@@ -1,0 +1,64 @@
+body,
+.main-sidebar,
+.content-wrapper,
+.form-control,
+.btn,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.nav-sidebar .nav-link p,
+.login-box,
+.card {
+    font-family: "Sarabun", "Leelawadee UI", Tahoma, sans-serif;
+}
+
+.brand-link .brand-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.required::after {
+    content: " *";
+    color: #dc3545;
+}
+
+.nav-sidebar .nav-item > form {
+    margin: 0;
+}
+
+.nav-sidebar .nav-item > form > button.nav-link {
+    background: transparent;
+    border: 0;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    color: #c2c7d0;
+}
+
+.nav-sidebar .nav-item > form > button.nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+.login-box {
+    width: 420px;
+}
+
+.file-hint {
+    font-size: 0.875rem;
+}
+
+@media (max-width: 576px) {
+    .login-box {
+        width: 92%;
+        margin-top: 1.5rem;
+    }
+}

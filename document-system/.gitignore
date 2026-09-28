@@ -1,0 +1,5 @@
+config.php
+storage/php-error.log
+storage/uploads/*
+!storage/uploads/.htaccess
+!storage/uploads/.gitkeep
