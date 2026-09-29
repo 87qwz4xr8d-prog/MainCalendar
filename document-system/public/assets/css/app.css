@@ -52,6 +52,19 @@ h6,
     width: 420px;
 }
 
+.split-work {
+    display: grid;
+    grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+@media (max-width: 991.98px) {
+    .split-work {
+        grid-template-columns: 1fr;
+    }
+}
+
 .file-hint {
     font-size: 0.875rem;
 }

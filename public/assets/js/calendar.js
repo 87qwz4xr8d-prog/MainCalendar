@@ -1,8 +1,54 @@
 (function () {
     'use strict';
 
-    const HOUR_PX = 56;
-    const PX_PER_MIN = HOUR_PX / 60;
+    const WORK_START_MIN = 8 * 60;
+    const WORK_END_MIN = 18 * 60;
+    const HOUR_WORK = 68;
+    const HOUR_OFF = 26;
+
+    function minuteToY(minutes) {
+        const value = Math.max(0, Math.min(minutes, 24 * 60));
+        const before = (WORK_START_MIN / 60) * HOUR_OFF;
+        if (value <= WORK_START_MIN) {
+            return (value / 60) * HOUR_OFF;
+        }
+        if (value <= WORK_END_MIN) {
+            return before + ((value - WORK_START_MIN) / 60) * HOUR_WORK;
+        }
+        const work = ((WORK_END_MIN - WORK_START_MIN) / 60) * HOUR_WORK;
+        return before + work + ((value - WORK_END_MIN) / 60) * HOUR_OFF;
+    }
+
+    function yToMinute(y) {
+        const before = (WORK_START_MIN / 60) * HOUR_OFF;
+        const work = ((WORK_END_MIN - WORK_START_MIN) / 60) * HOUR_WORK;
+        const workBottom = before + work;
+        const value = Math.max(0, y);
+        if (value <= before) {
+            return (value / HOUR_OFF) * 60;
+        }
+        if (value <= workBottom) {
+            return WORK_START_MIN + ((value - before) / HOUR_WORK) * 60;
+        }
+        return WORK_END_MIN + ((value - workBottom) / HOUR_OFF) * 60;
+    }
+
+    const DAY_HEIGHT = minuteToY(24 * 60);
+
+    function isWeekend(day) {
+        const dow = day.getDay();
+        return dow === 0 || dow === 6;
+    }
+
+    function timeGridColumns(days) {
+        const tracks = days.map((day) => {
+            if (days.length < 2) {
+                return 'minmax(0, 1fr)';
+            }
+            return isWeekend(day) ? 'minmax(0, 0.62fr)' : 'minmax(0, 1.2fr)';
+        });
+        return `72px ${tracks.join(' ')}`;
+    }
     const MONTHS = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
     const MONTHS_SHORT = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
     const DAYS = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
@@ -463,9 +509,11 @@
         const root = document.createElement('div');
         root.className = 'timegrid';
         root.style.setProperty('--days', String(days.length));
+        const columns = timeGridColumns(days);
 
         const head = document.createElement('div');
         head.className = 'timegrid-head';
+        head.style.gridTemplateColumns = columns;
         head.append(document.createElement('div'));
         days.forEach((day) => head.append(dayHead(day)));
 
@@ -473,12 +521,17 @@
         scroll.className = 'timegrid-scroll';
         const body = document.createElement('div');
         body.className = 'timegrid-body';
+        body.style.gridTemplateColumns = columns;
         const hours = document.createElement('div');
         hours.className = 'tg-hours';
+        hours.style.height = `${DAY_HEIGHT}px`;
         for (let hour = 0; hour < 24; hour += 1) {
             const label = document.createElement('div');
             label.className = 'hour-label';
-            label.style.top = `${hour * HOUR_PX}px`;
+            if (hour >= 8 && hour <= 18) {
+                label.classList.add('is-work');
+            }
+            label.style.top = `${minuteToY(hour * 60)}px`;
             label.textContent = hour === 0 ? '' : `${String(hour).padStart(2, '0')}:00`;
             hours.append(label);
         }
@@ -493,7 +546,7 @@
         }
         root.append(scroll);
         grid.append(root);
-        scroll.scrollTop = previousScroll == null ? 8 * HOUR_PX : previousScroll;
+        scroll.scrollTop = previousScroll == null ? minuteToY(WORK_START_MIN) : previousScroll;
         requestAnimationFrame(() => {
             const width = scroll.offsetWidth - scroll.clientWidth;
             head.style.paddingRight = `${width}px`;
@@ -506,6 +559,9 @@
     function dayHead(day) {
         const cell = document.createElement('div');
         cell.className = 'tg-dayhead';
+        if (isWeekend(day)) {
+            cell.classList.add('is-weekend');
+        }
         const name = document.createElement('div');
         name.textContent = DAYS_SHORT[day.getDay()];
         const number = document.createElement('button');
@@ -526,13 +582,22 @@
     function dayColumn(day) {
         const column = document.createElement('div');
         column.className = 'day-col';
+        column.style.height = `${DAY_HEIGHT}px`;
+        if (isWeekend(day)) {
+            column.classList.add('is-weekend');
+        }
+        const band = document.createElement('div');
+        band.className = 'work-band';
+        band.style.top = `${minuteToY(WORK_START_MIN)}px`;
+        band.style.height = `${minuteToY(WORK_END_MIN) - minuteToY(WORK_START_MIN)}px`;
+        column.append(band);
         for (let hour = 0; hour < 24; hour += 1) {
             const line = document.createElement('div');
             line.className = 'hour-line';
-            line.style.top = `${hour * HOUR_PX}px`;
+            line.style.top = `${minuteToY(hour * 60)}px`;
             const half = document.createElement('div');
             half.className = 'hour-line half';
-            half.style.top = `${hour * HOUR_PX + HOUR_PX / 2}px`;
+            half.style.top = `${minuteToY(hour * 60 + 30)}px`;
             column.append(line, half);
         }
         const timed = state.events.filter((item) => !isMultiDay(item) && coversDay(item, day));
@@ -543,7 +608,7 @@
                 return;
             }
             const y = event.clientY - column.getBoundingClientRect().top;
-            let minutes = Math.round(y / PX_PER_MIN / 30) * 30;
+            let minutes = Math.round(yToMinute(y) / 30) * 30;
             minutes = Math.max(0, Math.min(minutes, 23 * 60 + 30));
             openCreate({ date: day, minutes });
         });
@@ -552,13 +617,14 @@
 
     function timedEvent(event, day) {
         const [startMin, endMin] = minuteSpan(event, day);
-        const top = startMin * PX_PER_MIN;
-        const height = Math.max((endMin - startMin) * PX_PER_MIN, 18);
+        const top = minuteToY(startMin);
+        const height = Math.max(minuteToY(endMin) - top, 18);
+        const span = event.span || 1;
         const button = eventButton(event);
         button.style.top = `${top}px`;
         button.style.height = `${height}px`;
         button.style.left = `calc(${(event.col / event.cols) * 100}% + 2px)`;
-        button.style.width = `calc(${100 / event.cols}% - 4px)`;
+        button.style.width = `calc(${(span / event.cols) * 100}% - 4px)`;
         if (height < 36) {
             button.classList.add('is-compact');
         }
@@ -576,6 +642,7 @@
         }
         const row = document.createElement('div');
         row.className = 'allday-row';
+        row.style.gridTemplateColumns = timeGridColumns(days);
         const label = document.createElement('div');
         label.className = 'allday-label';
         label.textContent = 'ทั้งวัน';
@@ -624,7 +691,7 @@
         const now = new Date();
         const line = document.createElement('div');
         line.className = 'now-line';
-        line.style.top = `${(now.getHours() * 60 + now.getMinutes()) * PX_PER_MIN}px`;
+        line.style.top = `${minuteToY(now.getHours() * 60 + now.getMinutes())}px`;
         line.append(document.createElement('span'));
         column.append(line);
     }
@@ -632,7 +699,7 @@
     function moveNowLine() {
         const now = new Date();
         document.querySelectorAll('.now-line').forEach((line) => {
-            line.style.top = `${(now.getHours() * 60 + now.getMinutes()) * PX_PER_MIN}px`;
+            line.style.top = `${minuteToY(now.getHours() * 60 + now.getMinutes())}px`;
         });
     }
 
@@ -1023,6 +1090,18 @@
             });
             cluster.forEach((item) => {
                 item.cols = columns.length;
+                let span = 1;
+                for (let next = item.col + 1; next < columns.length; next += 1) {
+                    const blocked = cluster.some((other) => other !== item
+                        && other.col === next
+                        && other.startMin < item.endMin
+                        && other.endMin > item.startMin);
+                    if (blocked) {
+                        break;
+                    }
+                    span += 1;
+                }
+                item.span = span;
             });
         });
         return items;
