@@ -1,0 +1,17 @@
+Options -Indexes
+
+<FilesMatch "^(config\.php|config\.sample\.php|database\.sql)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?:includes|storage|tests)(?:/|$) - [F,END]
+    RewriteRule ^public/ - [END]
+    RewriteRule ^(.*)$ public/$1 [END]
+</IfModule>
