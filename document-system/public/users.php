@@ -139,8 +139,8 @@ $pageTitle = 'ผู้ใช้งาน';
 $activeNav = 'users';
 require __DIR__ . '/../includes/header.php';
 ?>
-<div class="row">
-    <div class="col-lg-4">
+<div class="split-work">
+    <div>
         <div class="card card-primary">
             <div class="card-header">
                 <h2 class="card-title h5 mb-0"><?= $editUser ? 'แก้ไขผู้ใช้' : 'เพิ่มผู้ใช้' ?></h2>
@@ -201,7 +201,7 @@ require __DIR__ . '/../includes/header.php';
             </form>
         </div>
     </div>
-    <div class="col-lg-8">
+    <div>
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title h5 mb-0">รายชื่อผู้ใช้</h2>

@@ -107,8 +107,8 @@ $pageTitle = 'หมวดหมู่';
 $activeNav = 'categories';
 require __DIR__ . '/../includes/header.php';
 ?>
-<div class="row">
-    <div class="col-lg-4">
+<div class="split-work">
+    <div>
         <div class="card card-primary">
             <div class="card-header">
                 <h2 class="card-title h5 mb-0"><?= $editId > 0 && $formError !== null || $editCategory ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่' ?></h2>
@@ -136,7 +136,7 @@ require __DIR__ . '/../includes/header.php';
             </form>
         </div>
     </div>
-    <div class="col-lg-8">
+    <div>
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title h5 mb-0">รายการหมวดหมู่</h2>
